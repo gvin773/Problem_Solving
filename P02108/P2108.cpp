@@ -1,20 +1,26 @@
+#define onlycc ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0)
 #include <iostream>
 #include <algorithm>
+#include <string>
 #include <cmath>
 using namespace std;
 
-int num[500000];
-int counter[10000];
-int mode[10000];
+typedef long long ll;
+
+int num[500000], counter[10000], mode[10000];
 
 int main()
 {
+    onlycc;
     int n, sum = 0, maxv = -5000, minv = 5000, temp = 0;
-    scanf("%d", &n);
+    cin >> n;
+
+    for(int i = 0; i < 10000; i++)
+        mode[i] = 464646;
 
     for(int i = 0; i < n; i++)
     {
-        scanf("%d", num+i);
+        cin >> num[i];
         sum += num[i];
         counter[num[i]+4000]++;
     }
@@ -38,9 +44,10 @@ int main()
             mode[j++] = i-4000;
     }
 
-    if(mode[1] != 0) mode[0] = mode[1];
+    if(mode[1] != 464646) mode[0] = mode[1];
 
-    printf("%d\n%d\n%d\n%d", (int)floor(sum/(float)n+0.5), num[n/2], mode[0], maxv-minv);
+    cout << (int)floor(sum/(float)n+0.5) << endl
+    << num[n/2] << endl << mode[0] << endl << maxv-minv;
 
     return 0;
 }
