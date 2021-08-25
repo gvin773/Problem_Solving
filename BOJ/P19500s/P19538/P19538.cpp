@@ -1,110 +1,75 @@
+#define onlycc ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0)
 #include <iostream>
 #include <algorithm>
-#include <vector>
+#include <string>
+#include <cstring>
 #include <queue>
-#include <stack>
 using namespace std;
 
+typedef long long ll;
+
 vector<int> nodes[200001];
-stack<int> ret;
-queue<int> con;
+queue<int> q, temp;
 int rumor[200001];
-int n, m, time, num, check;
-int temp[200001];
+int n, m, a, time;
 
-void BFS()
+void bfs()
 {
-    while(!con.empty())
+    time++;
+    while(!q.empty())
     {
-        int now = con.front();
-        con.pop();
-        for(int i = 0; i < nodes[now].size(); i++)
+        int Size = q.size();
+        for(int i = 0; i < Size; i++)
         {
-            int next = nodes[now][i];
-            if(rumor[next] == -1)
+            int now = q.front();
+            q.pop();
+            for(int next : nodes[now])
             {
-                int counter = 0;
-                for(int j = 0; j < nodes[next].size(); j++)
+                if(rumor[next] == -1)
                 {
-                    if(rumor[nodes[next][j]] != -1)
-                        counter++;
-                }
+                    int cnt = 0;
+                    for(int nnext : nodes[next])
+                        if(rumor[nnext] != -1) cnt++;
 
-                if((float)counter >= nodes[next].size()/(float)2 && temp[next] == 0)
-                {
-                    temp[next] = time;
-                    num++;
-                    con.push(next);
-                    ret.push(next);
+                    if(cnt >= nodes[next].size()/(float)2)
+                    {
+                        q.push(next);
+                        temp.push(next);
+                    }
                 }
             }
         }
 
-        check++;
-        if(check == m)
+        while(!temp.empty())
         {
-            for(int i = ret.top(); ret.top() != 0; i = ret.top())
-            {
-                //int next = nodes[now][i];
-                rumor[i] = temp[i];
-                temp[i] = 0;
-                ret.pop();
-            }
-
-            check = 0;
-            m = num;
-            num = 0;
-            time++;
+            rumor[temp.front()] = time;
+            temp.pop();
         }
-
-      /*  int k = 1;
-        for(; k <= n; k++)
-        {
-            if(rumor[k] == -1)
-                break;
-        }
-
-        if(k == n+1) break;*/
-
-      /*  for(int i = 1; i <= n; i++)
-            printf("%d ", rumor[i]);
-            puts("");*/
+        time++;
     }
 }
 
 int main()
 {
-    scanf("%d", &n);
-
-    for(int i = 1; i <= n; i++)
-        rumor[i] = -1;
-
+    onlycc;
+    cin >> n;
+    memset(rumor, -1, sizeof(rumor));
     for(int i = 1; i <= n;)
     {
-        int a;
-        scanf("%d", &a);
-        if(a)
-        {
-            nodes[i].push_back(a);
-        }
+        cin >> a;
+        if(a) nodes[i].push_back(a);
         else i++;
     }
-
-    scanf("%d", &m);
-    for(int i = 1; i<= m; i++)
+    cin >> m;
+    for(int i = 1; i <= m; i++)
     {
-        int a;
-        scanf("%d", &a);
+        cin >> a;
         rumor[a] = time;
-        con.push(a);
+        q.push(a);
     }
 
-    time++;
-    ret.push(0);
-    BFS();
-
-    for(int i = 1; i <= n; i++)
-        printf("%d ", rumor[i]);
+    bfs();
+    for(int i = 1; i <= n; i++) cout << rumor[i] << ' ';
 
     return 0;
 }
