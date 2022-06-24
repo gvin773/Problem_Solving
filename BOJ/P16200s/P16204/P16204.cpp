@@ -1,0 +1,16 @@
+#define onlycc ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0)
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+
+int n, m, k;
+
+int main()
+{
+    onlycc;
+    cin >> n >> m >> k;
+    cout << min(m,k) + min(n-m,n-k);
+
+    return 0;
+}
