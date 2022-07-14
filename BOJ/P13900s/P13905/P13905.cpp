@@ -1,0 +1,59 @@
+#define onlycc ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0)
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+typedef pair<int,int> pii;
+
+ll P, w, c, v, p[200001], s, e, weight;
+vector<pair<ll, pii>> way;
+
+int Find(int x)
+{
+    if(p[x] < 0) return x;
+    p[x] = Find(p[x]);
+    return p[x];
+}
+
+void Merge(int x, int y)
+{
+    int px = Find(x);
+    int py = Find(y);
+    if(px == py) return;
+    if(p[px] <= p[py])
+    {
+        p[px] += p[py];
+        p[py] = px;
+    }
+    else
+    {
+        p[py] += p[px];
+        p[px] = py;
+    }
+}
+
+int main()
+{
+    onlycc;
+    cin >> P >> w >> c >> v;
+    memset(p, -1, sizeof(p));
+    for(int i = 0; i < w; i++)
+    {
+        cin >> s >> e >> weight;
+        way.push_back({weight, {s,e}});
+    }
+
+    sort(way.begin(), way.end());
+    for(int i = way.size()-1; i >= 0; i--)
+    {
+        Merge(way[i].second.first, way[i].second.second);
+        if(Find(c) == Find(v))
+        {
+            cout << way[i].first;
+            return 0;
+        }
+    }
+    cout << 0;
+
+    return 0;
+}
