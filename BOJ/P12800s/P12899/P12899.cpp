@@ -56,31 +56,25 @@ public:
     }
 };
 
-ll n, k, idx = 1;
+ll n, t, x;
 
 int main()
 {
     onlycc;
-    cin >> n >> k;
+    cin >> n;
 
     Segtree stree(n);
-    for(int i = 0; i < n; i++) stree.arr[stree.leaf+i] = 1;
-    stree.construct();
-
-    cout << '<';
     for(int i = 0; i < n; i++)
     {
-        int s = n-i;
-        idx += (k-1);
-        idx = (idx%s) ? idx%s : s;
-
-        int temp = stree.kth(1, idx-1);
-        stree.update(temp, -1);
-
-        cout << temp+1;
-        if(i != n-1) cout << ", ";
+        cin >> t >> x;
+        if(t == 1) stree.update(x-1, 1);
+        else
+        {
+            int temp = stree.kth(1, x-1);
+            cout << temp+1 << '\n';
+            stree.update(temp, -1);
+        }
     }
-    cout << '>';
 
     return 0;
 }

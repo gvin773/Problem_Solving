@@ -16,7 +16,7 @@ public:
     {
         leaf = 1;
         arr.resize(4194304);
-        fill(arr.begin(), arr.end(), 0);
+        fill(arr.begin(), arr.end(), LLONG_MAX);
         leaf = 4194304/2;
         //while(leaf < Size) leaf *= 2; //[leaf, 2leaf): leaf nodes
     }
@@ -24,27 +24,27 @@ public:
     ll sum(int L, int R) { return sum(L, R, 1, 0, leaf); } //get sum of [L, R)
     ll sum(int L, int R, int nodeNum, int nodeL, int nodeR)
     {
-        if(R <= nodeL || nodeR <= L) return 0;
+        if(R <= nodeL || nodeR <= L) return LLONG_MAX;
         if(L <= nodeL && nodeR <= R) return arr[nodeNum];
         ll mid = (nodeL + nodeR) / 2;
-        return sum(L, R, nodeNum*2, nodeL, mid) + sum(L, R, nodeNum*2+1, mid, nodeR);
+        return min(sum(L, R, nodeNum*2, nodeL, mid), sum(L, R, nodeNum*2+1, mid, nodeR));
     }
 
     void update(ll i, ll val)
     {
         i += leaf;
-        arr[i] += val; //update part
+        arr[i] = val; //update part
         while(i > 1)
         {
             i /= 2;
-            arr[i] = arr[i*2] + arr[i*2+1];
+            arr[i] = min(arr[i*2], arr[i*2+1]);
         }
     }
 
     void construct()
     {
         for(ll i = leaf-1; i > 0; i--)
-            arr[i] = arr[i*2] + arr[i*2+1];
+            arr[i] = min(arr[i*2], arr[i*2+1]);
     }
 
     int kth(int node, int k)
@@ -56,31 +56,26 @@ public:
     }
 };
 
-ll n, k, idx = 1;
+ll n, x, ans;
+pair<ll, pll> a[500001];
 
 int main()
 {
     onlycc;
-    cin >> n >> k;
+    cin >> n;
 
     Segtree stree(n);
-    for(int i = 0; i < n; i++) stree.arr[stree.leaf+i] = 1;
-    stree.construct();
+    for(int i = 0; i < n; i++) {cin >> x; a[x-1].first = i;}
+    for(int i = 0; i < n; i++) {cin >> x; a[x-1].second.first = i;}
+    for(int i = 0; i < n; i++) {cin >> x; a[x-1].second.second = i;}
+    sort(a, a+n);
 
-    cout << '<';
     for(int i = 0; i < n; i++)
     {
-        int s = n-i;
-        idx += (k-1);
-        idx = (idx%s) ? idx%s : s;
-
-        int temp = stree.kth(1, idx-1);
-        stree.update(temp, -1);
-
-        cout << temp+1;
-        if(i != n-1) cout << ", ";
+        if(stree.sum(0, a[i].second.second) > a[i].second.first) ans++;
+        stree.update(a[i].second.second, a[i].second.first);
     }
-    cout << '>';
+    cout << ans;
 
     return 0;
 }

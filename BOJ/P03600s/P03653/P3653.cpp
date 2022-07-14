@@ -15,10 +15,10 @@ public:
     Segtree(int number) : Size(number)
     {
         leaf = 1;
-        arr.resize(4194304);
+        arr.resize(524288);
         fill(arr.begin(), arr.end(), 0);
-        leaf = 4194304/2;
         //while(leaf < Size) leaf *= 2; //[leaf, 2leaf): leaf nodes
+        leaf = 524288/2;
     }
 
     ll sum(int L, int R) { return sum(L, R, 1, 0, leaf); } //get sum of [L, R)
@@ -33,7 +33,7 @@ public:
     void update(ll i, ll val)
     {
         i += leaf;
-        arr[i] += val; //update part
+        arr[i] = val; //update part
         while(i > 1)
         {
             i /= 2;
@@ -46,41 +46,41 @@ public:
         for(ll i = leaf-1; i > 0; i--)
             arr[i] = arr[i*2] + arr[i*2+1];
     }
-
-    int kth(int node, int k)
-    {
-        if(node >= leaf) return node-leaf;
-        int pivot = arr[node*2];
-        if(k < pivot) return kth(node*2, k);
-        else return kth(node*2+1, k-pivot);
-    }
 };
 
-ll n, k, idx = 1;
+ll tc, n, m, x, pos[100010];
 
 int main()
 {
     onlycc;
-    cin >> n >> k;
-
-    Segtree stree(n);
-    for(int i = 0; i < n; i++) stree.arr[stree.leaf+i] = 1;
-    stree.construct();
-
-    cout << '<';
-    for(int i = 0; i < n; i++)
+    cin >> tc;
+    while(tc--)
     {
-        int s = n-i;
-        idx += (k-1);
-        idx = (idx%s) ? idx%s : s;
+        cin >> n >> m;
 
-        int temp = stree.kth(1, idx-1);
-        stree.update(temp, -1);
+        Segtree stree(n+m);
+        for(int i = 0; i < n; i++) stree.arr[stree.leaf+i] = 1;
+        stree.construct();
+        for(int i = 1; i <= n; i++) pos[i] = n-i;
 
-        cout << temp+1;
-        if(i != n-1) cout << ", ";
+        ll cnt = 1, pre = -1;
+        for(int i = 0; i < m; i++)
+        {
+            cin >> x;
+            if(x == pre)
+            {
+                cout << 0 << ' ';
+                continue;
+            }
+            pre = x;
+            stree.update(pos[x], 0);
+            cout << stree.sum(pos[x]+1, n+cnt) << ' ';
+            pos[x] = n+cnt;
+            stree.update(pos[x], 1);
+            cnt++;
+        }
+        cout << '\n';
     }
-    cout << '>';
 
     return 0;
 }
